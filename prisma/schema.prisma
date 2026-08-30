@@ -1,0 +1,306 @@
+// E-Move Guardian — data model
+// SQLite for zero-config local dev. To scale: change provider to "postgresql"
+// and set DATABASE_URL to a Postgres connection string. Model is Postgres-ready
+// (enums represented as strings for SQLite portability).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Identity & access
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("CLIENT") // OWNER | CLIENT | ADMIN
+  fullName     String
+  phone        String?
+  locale       String   @default("en") // en | fr | ar
+  // Sensitive identity (privacy-controlled). idType: CIN | PASSPORT
+  idType       String?
+  idNumber     String?
+  dateOfBirth  DateTime?
+  createdAt    DateTime @default(now())
+
+  rentals       Rental[]
+  reservations  Reservation[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+}
+
+// ---------------------------------------------------------------------------
+// Fleet
+// ---------------------------------------------------------------------------
+
+model Vehicle {
+  id            String   @id @default(cuid())
+  code          String   @unique // EV-014
+  model         String
+  imageUrl      String?
+  voltageClass  Int      @default(48) // 48V etc — compatibility
+  rangeKm       Int      @default(60)
+  pricePerHour  Float    @default(10) // DT/hour
+  status        String   @default("AVAILABLE") // AVAILABLE|RENTED|MAINTENANCE|AT_RISK|OFFLINE
+  homeLat       Float    @default(36.8065)
+  homeLng       Float    @default(10.1815)
+  createdAt     DateTime @default(now())
+
+  batteryId     String?
+  battery       Battery? @relation("VehicleBattery", fields: [batteryId], references: [id])
+
+  telemetry      Telemetry[]
+  locations      VehicleLocation[]
+  rentals        Rental[]
+  reservations   Reservation[]
+  incidents      Incident[]
+  assignments    BatteryAssignment[]
+  riskScores     RiskScore[]
+  maintenance    MaintenanceRecord[]
+}
+
+model Battery {
+  id            String   @id @default(cuid())
+  code          String   @unique // BAT-038
+  voltageClass  Int      @default(48)
+  capacityWh    Int      @default(1200)
+  cycleCount    Int      @default(0)
+  ageMonths     Int      @default(1)
+  soh           Float    @default(100) // state of health %
+  soc           Float    @default(100) // state of charge %
+  status        String   @default("READY") // READY|CHARGING|ASSIGNED|ATTENTION|SERVICE
+  hubId         String?
+  hub           Hub?     @relation(fields: [hubId], references: [id])
+  createdAt     DateTime @default(now())
+
+  vehicles      Vehicle[]           @relation("VehicleBattery")
+  readings      BatteryReading[]
+  assignments   BatteryAssignment[]
+  predictions   AiPrediction[]
+  maintenance   MaintenanceRecord[]
+}
+
+model Hub {
+  id        String   @id @default(cuid())
+  name      String
+  lat       Float
+  lng       Float
+  gateways  Int      @default(1) // redundant BLE gateways at important hubs
+  createdAt DateTime @default(now())
+
+  batteries Battery[]
+}
+
+// ---------------------------------------------------------------------------
+// Telemetry & location (stable ESP32 contract — see docs)
+// ---------------------------------------------------------------------------
+
+model Telemetry {
+  id           String   @id @default(cuid())
+  vehicleId    String
+  vehicle      Vehicle  @relation(fields: [vehicleId], references: [id])
+  batteryCode  String?
+  timestamp    DateTime @default(now())
+  latitude     Float?
+  longitude    Float?
+  temperature  Float?   // battery temp °C
+  voltage      Float?   // battery voltage V
+  soc          Float?   // %
+  speed        Float?   // km/h
+  bleSignal    Float?   // dBm (robust estimate)
+  bleConfidence String? // HIGH|MEDIUM|LOW
+  gpsAvailable Boolean  @default(true)
+  bleAvailable Boolean  @default(true)
+  scenario     String   @default("NORMAL")
+
+  @@index([vehicleId, timestamp])
+}
+
+model BatteryReading {
+  id          String   @id @default(cuid())
+  batteryId   String
+  battery     Battery  @relation(fields: [batteryId], references: [id])
+  timestamp   DateTime @default(now())
+  temperature Float
+  voltage     Float
+  soc         Float
+  charging    Boolean  @default(false)
+
+  @@index([batteryId, timestamp])
+}
+
+model VehicleLocation {
+  id            String   @id @default(cuid())
+  vehicleId     String
+  vehicle       Vehicle  @relation(fields: [vehicleId], references: [id])
+  lat           Float
+  lng           Float
+  gpsConfidence Float    @default(0.9)
+  timestamp     DateTime @default(now())
+
+  @@index([vehicleId, timestamp])
+}
+
+// ---------------------------------------------------------------------------
+// Rentals & reservations
+// ---------------------------------------------------------------------------
+
+model Reservation {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  vehicleId     String
+  vehicle       Vehicle  @relation(fields: [vehicleId], references: [id])
+  startTime     DateTime
+  endTime       DateTime
+  hours         Int
+  priceTotal    Float
+  paymentMethod String   @default("PAY_AT_SHOP") // ONLINE | PAY_AT_SHOP
+  paymentStatus String   @default("PENDING")     // PENDING | PAID
+  status        String   @default("UPCOMING")    // UPCOMING|CANCELLED|CONVERTED
+  createdAt     DateTime @default(now())
+
+  rental        Rental?
+}
+
+model Rental {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  vehicleId     String
+  vehicle       Vehicle  @relation(fields: [vehicleId], references: [id])
+  reservationId String?  @unique
+  reservation   Reservation? @relation(fields: [reservationId], references: [id])
+  startTime     DateTime
+  endTime       DateTime
+  status        String   @default("ACTIVE") // ACTIVE|ENDING_SOON|EXPIRED|OVERDUE|RETURNED|CANCELLED
+  priceTotal    Float
+  createdAt     DateTime @default(now())
+
+  incidents     Incident[]
+}
+
+// ---------------------------------------------------------------------------
+// Intelligence: incidents, risk, AI predictions
+// ---------------------------------------------------------------------------
+
+model Incident {
+  id            String   @id @default(cuid())
+  vehicleId     String?
+  vehicle       Vehicle? @relation(fields: [vehicleId], references: [id])
+  rentalId      String?
+  rental        Rental?  @relation(fields: [rentalId], references: [id])
+  batteryCode   String?
+  type          String   // BATTERY_ANOMALY|THEFT_RISK|TAMPERING|RENTAL_OVERDUE|BATTERY_SERVICE|...
+  severity      String   // LOW|MEDIUM|HIGH|CRITICAL
+  riskScore     Float    @default(0) // 0..100
+  confidence    Float    @default(0) // 0..1
+  title         String
+  explanation   String   // human explanation (already interpreted)
+  technical     String?  // JSON string: raw scores for "Why?" expansion
+  action        String   // recommended action
+  status        String   @default("OPEN") // OPEN|ACKNOWLEDGED|RESOLVED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status, severity])
+}
+
+model RiskScore {
+  id            String   @id @default(cuid())
+  vehicleId     String
+  vehicle       Vehicle  @relation(fields: [vehicleId], references: [id])
+  batteryAnomaly Float   @default(0)
+  theftAnomaly   Float   @default(0)
+  tamperAnomaly  Float   @default(0)
+  rentalViolation Float  @default(0)
+  overall        Float   @default(0)
+  severity       String  @default("LOW")
+  createdAt      DateTime @default(now())
+
+  @@index([vehicleId, createdAt])
+}
+
+model AiPrediction {
+  id          String   @id @default(cuid())
+  batteryId   String?
+  battery     Battery? @relation(fields: [batteryId], references: [id])
+  vehicleCode String?
+  kind        String   // battery-anomaly|battery-health|battery-fault|theft|tampering
+  score       Float
+  label       String?
+  confidence  Float    @default(0)
+  detail      String?  // JSON
+  modelVersion String  @default("v1")
+  createdAt   DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Operations
+// ---------------------------------------------------------------------------
+
+model BatteryAssignment {
+  id         String   @id @default(cuid())
+  batteryId  String
+  battery    Battery  @relation(fields: [batteryId], references: [id])
+  vehicleId  String
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id])
+  assignedAt DateTime @default(now())
+  removedAt  DateTime?
+}
+
+model MaintenanceRecord {
+  id         String   @id @default(cuid())
+  vehicleId  String?
+  vehicle    Vehicle? @relation(fields: [vehicleId], references: [id])
+  batteryId  String?
+  battery    Battery? @relation(fields: [batteryId], references: [id])
+  kind       String   // INSPECTION|BATTERY_SWAP|REPAIR|SERVICE
+  note       String
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String   // event type
+  title     String
+  body      String
+  severity  String   @default("INFO") // INFO|WARN|CRITICAL
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  reservationId String?
+  amount        Float
+  method        String
+  status        String   @default("PENDING")
+  // Never store raw card data — mock reference only.
+  reference     String?
+  createdAt     DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String?
+  entityId  String?
+  meta      String?  // JSON
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

@@ -1,0 +1,14 @@
+/node_modules
+/.next
+/out
+*.log
+.env
+prisma/dev.db
+prisma/dev.db-journal
+.DS_Store
+next-env.d.ts
+
+# ML artifacts
+ml/data/
+ml/models/
+__pycache__/
