@@ -9,10 +9,10 @@ export type AppEvent =
   | { type: "vehicle-status"; vehicleCode: string; status: string }
   | { type: "risk"; vehicleCode: string; data: unknown };
 
-const g = globalThis as unknown as { __emgBus?: EventEmitter };
-export const bus = g.__emgBus ?? new EventEmitter();
+const g = globalThis as unknown as { __evaBus?: EventEmitter };
+export const bus = g.__evaBus ?? new EventEmitter();
 bus.setMaxListeners(200);
-g.__emgBus = bus;
+g.__evaBus = bus;
 
 export function emit(e: AppEvent) {
   bus.emit("event", e);

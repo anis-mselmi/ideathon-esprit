@@ -1,4 +1,4 @@
-# ⚡ E-Move Guardian
+# ⚡ EVA
 
 **Smart electric mobility management for safer micro-leasing.**
 
@@ -19,7 +19,7 @@ booking experience for renters.
 2. [Tech stack & why](#tech-stack--why)
 3. [Honest simplifications](#honest-simplifications)
 4. [Quick start](#quick-start)
-5. [Demo scenario](#demo-scenario)
+5. [External telemetry simulation](#external-telemetry-simulation)
 6. [Architecture](#architecture)
 7. [The AI layer](#the-ai-layer)
 8. [Project structure](#project-structure)
@@ -37,7 +37,8 @@ booking experience for renters.
 management + vehicle detail with live telemetry charts, Battery list + full **Battery
 Passport** (SOH/RUL/history), **Battery Hub** with compatibility-checked swaps, **Live
 Tracking** map (Leaflet/OSM), Rentals with owner-only identity, Alerts/incident triage
-with "Why?" explanations, business **Insights** dashboard, and a **Demo Control Panel**.
+with "Why?" explanations and a business **Insights** dashboard. Telemetry can be supplied
+by the included external Python generator or by real devices.
 
 **Client portal** — Browse available vehicles, 4-step **Booking** (date/time/duration →
 identity → payment → confirm) with dynamic pricing, **My Rentals** with **modify** and
@@ -120,28 +121,24 @@ npm run dev
 Open **http://localhost:3000**.
 
 **Demo accounts**
-- Owner: `owner@emove.tn` / `owner123`
-- Client: `client@emove.tn` / `client123`
+- Owner: `owner@eva.tn` / `owner123`
+- Client: `client@eva.tn` / `client123`
 
 ---
 
-## Demo scenario
+## External telemetry simulation
 
-1. Sign in as the **owner**.
-2. Go to **Demo Control** (`/owner/demo`) → click **🎬 Run full demo scenario**.
-3. This starts the simulator and:
-   - triggers **battery overheating** on `EV-014`,
-   - forces an **expired rental** on `EV-007` that then **moves suspiciously and loses
-     GPS/BLE** (theft + tampering).
-4. Open the **Command Center** — within seconds you'll see prioritized incidents:
-   - 🔴 `EV-014` **Battery stress detected** (HIGH) with an interpretation + action,
-   - 🔴 `EV-007` **Return required** (rental overdue),
-   - 🔴 `EV-007` **Possible device tampering**.
-5. Click **Why?** on any incident to reveal the underlying AI scores.
-6. Fix it: open **Battery Hub**, pick `EV-014`, accept the recommended healthy battery,
-   **Assign** → vehicle returns to READY. Resolve the incident to clear the AT_RISK flag.
+Telemetry simulation runs outside the platform UI. Set `IOT_INGEST_API_KEY` in `.env`, then
+run the dependency-free Python generator as a separate process:
 
-You can also trigger individual scenarios per vehicle from the same panel.
+```bash
+export IOT_INGEST_API_KEY='use-a-long-random-value'
+python3 tools/telemetry_generator.py --vehicle EV-014 --scenario overheating
+```
+
+Use `--count 10` for a finite run, or choose `normal`, `overheating`, `low-battery`,
+`gps-loss`, `ble-loss`, or `tampering`. Open the Command Center while it runs to see the
+same telemetry, AI analysis, and incidents that real devices would produce.
 
 ---
 

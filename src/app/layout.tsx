@@ -7,7 +7,7 @@ import { ToastProvider } from "@/components/Toast";
 import { ServiceWorker } from "@/components/ServiceWorker";
 
 export const metadata: Metadata = {
-  title: "E-Move Guardian",
+  title: "EVA",
   description: "Smart electric mobility management for safer micro-leasing.",
   manifest: "/manifest.webmanifest",
 };
@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const jar = await cookies();
-  const locale = (jar.get("emg_locale")?.value as Locale) || "en";
+  const locale = (jar.get("eva_locale")?.value as Locale) || "en";
   const dir = RTL_LOCALES.includes(locale) ? "rtl" : "ltr";
 
   return (

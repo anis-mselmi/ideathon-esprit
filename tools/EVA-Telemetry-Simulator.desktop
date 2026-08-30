@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=EVA Telemetry Simulator
+Comment=Send synthetic telemetry to the EVA platform
+Exec=/home/msi/ideathon/dist/EVA-Telemetry-Simulator
+Icon=utilities-system-monitor
+Terminal=false
+Categories=Development;Utility;

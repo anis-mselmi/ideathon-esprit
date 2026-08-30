@@ -1,8 +1,8 @@
 {
-  "name": "e-move-guardian",
+  "name": "eva",
   "version": "0.1.0",
   "private": true,
-  "description": "E-Move Guardian — Smart electric mobility management for safer micro-leasing.",
+  "description": "EVA — Smart electric mobility management for safer micro-leasing.",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
@@ -11,7 +11,7 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "rm -f prisma/dev.db && prisma db push && tsx prisma/seed.ts",
-    "sim": "tsx iot-simulator/run.ts",
+    "sim": "python3 tools/telemetry_generator.py",
     "test": "vitest run",
     "test:watch": "vitest"
   },

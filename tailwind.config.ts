@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 /**
- * E-Move Guardian design system.
+ * EVA design system.
  * Deep navy primary, soft neutral ground, semantic health colors.
  */
 const config: Config = {

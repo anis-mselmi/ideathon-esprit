@@ -14,7 +14,7 @@ export const localeNames: Record<Locale, string> = {
 type Dict = Record<string, string>;
 
 export const en: Dict = {
-  "app.name": "E-Move Guardian",
+  "app.name": "EVA",
   "app.tagline": "Smart electric mobility management for safer micro-leasing.",
   "nav.commandCenter": "Command Center",
   "nav.fleet": "Fleet",
@@ -126,6 +126,7 @@ export const en: Dict = {
   "track.lastKnown": "Last known location",
   "track.lastUpdate": "Last update",
   "track.gpsConfidence": "GPS confidence",
+  "track.clickToLocate": "Tap a vehicle to locate it on the map",
 
   "incidents.title": "Alerts",
   "incidents.open": "Open",
@@ -205,7 +206,7 @@ export const en: Dict = {
 };
 
 export const fr: Dict = {
-  "app.name": "E-Move Guardian",
+  "app.name": "EVA",
   "app.tagline": "Gestion intelligente de la mobilité électrique pour un micro-leasing plus sûr.",
   "nav.commandCenter": "Centre de commande",
   "nav.fleet": "Flotte",
@@ -317,6 +318,7 @@ export const fr: Dict = {
   "track.lastKnown": "Dernière position connue",
   "track.lastUpdate": "Dernière mise à jour",
   "track.gpsConfidence": "Confiance GPS",
+  "track.clickToLocate": "Touchez un véhicule pour le localiser sur la carte",
 
   "incidents.title": "Alertes",
   "incidents.open": "Ouvert",
@@ -396,7 +398,7 @@ export const fr: Dict = {
 };
 
 export const ar: Dict = {
-  "app.name": "إي-موف غارديان",
+  "app.name": "إيفا",
   "app.tagline": "إدارة ذكية للتنقل الكهربائي من أجل تأجير أصغر وأكثر أماناً.",
   "nav.commandCenter": "مركز التحكم",
   "nav.fleet": "الأسطول",
@@ -508,6 +510,7 @@ export const ar: Dict = {
   "track.lastKnown": "آخر موقع معروف",
   "track.lastUpdate": "آخر تحديث",
   "track.gpsConfidence": "ثقة GPS",
+  "track.clickToLocate": "اضغط على مركبة لتحديد موقعها على الخريطة",
 
   "incidents.title": "التنبيهات",
   "incidents.open": "مفتوح",

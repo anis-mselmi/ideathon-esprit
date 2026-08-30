@@ -38,8 +38,8 @@ export function Landing() {
             </div>
             <div className="mt-6 rounded-xl bg-white/5 p-4 text-sm text-navy-100">
               <div className="font-semibold text-white">{t("auth.demoAccounts")}</div>
-              <div className="mt-1 font-mono text-xs">owner@emove.tn / owner123</div>
-              <div className="font-mono text-xs">client@emove.tn / client123</div>
+              <div className="mt-1 font-mono text-xs">owner@eva.tn / owner123</div>
+              <div className="font-mono text-xs">client@eva.tn / client123</div>
             </div>
           </div>
 

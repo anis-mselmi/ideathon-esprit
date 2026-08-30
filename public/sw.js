@@ -1,5 +1,5 @@
-// Minimal offline-shell service worker for E-Move Guardian (PWA).
-const CACHE = "emg-v1";
+// Minimal offline-shell service worker for EVA (PWA).
+const CACHE = "eva-v1";
 self.addEventListener("install", (e) => {
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["/"])));

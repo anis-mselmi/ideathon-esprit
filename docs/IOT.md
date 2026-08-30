@@ -60,6 +60,32 @@ The platform degrades gracefully: missing GPS/BLE, missing sensors, invalid, dup
 delayed telemetry are tolerated; if the AI is unavailable a safe fallback rules path keeps
 the dashboard usable.
 
+## External Python simulation
+
+The web application does not need a simulator page. `tools/telemetry_generator.py` runs as a
+separate process and posts the same `EspTelemetry` contract to `POST /api/telemetry`.
+
+```bash
+export IOT_INGEST_API_KEY='use-a-long-random-value'
+python3 tools/telemetry_generator.py --vehicle EV-014 --scenario overheating
+```
+
+Available scenarios are `normal`, `overheating`, `low-battery`, `gps-loss`, `ble-loss`, and
+`tampering`. Add `--count 10` for a finite run or `--interval 1` for faster playback. The
+generator has no third-party dependencies and can run on a laptop, CI job, or cloud worker.
+
+For a non-technical demo operator, run `python3 tools/telemetry_generator.py` with no
+arguments to open its desktop interface. On Windows, build a standalone executable by
+opening Command Prompt in the project folder and running `tools\\build_telemetry_exe.bat`.
+The resulting `dist\\EVA-Telemetry-Simulator.exe` can be copied to the demo laptop; Python is
+not required there. Enter the app URL and API key in the interface, select a vehicle and
+scenario, then click **Start test**.
+
+On Ubuntu, build a native clickable application with `tools/build_telemetry_linux.sh`. If
+needed, first install Tkinter with `sudo apt install python3-tk`. The script creates
+`dist/EVA-Telemetry-Simulator` and registers it in the Applications menu; no terminal is
+needed to launch it afterward.
+
 ## Going real
 
 1. Run an MQTT broker (e.g. Mosquitto); set `MQTT_URL`.

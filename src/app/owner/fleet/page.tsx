@@ -13,7 +13,16 @@ interface Vehicle {
   battery: { code: string; soc: number; soh: number } | null;
 }
 
-const FILTERS = ["ALL", "AVAILABLE", "RENTED", "MAINTENANCE", "AT_RISK", "OFFLINE"];
+// Map each filter to its i18n key (avoids fragile string transforms — AT_RISK
+// must resolve to the camelCase key `common.atRisk`, not `common.atrisk`).
+const FILTERS: { value: string; key: string }[] = [
+  { value: "ALL", key: "common.all" },
+  { value: "AVAILABLE", key: "common.available" },
+  { value: "RENTED", key: "common.rented" },
+  { value: "MAINTENANCE", key: "common.maintenance" },
+  { value: "AT_RISK", key: "common.atRisk" },
+  { value: "OFFLINE", key: "common.offline" },
+];
 
 export default function FleetPage() {
   const { t } = useI18n();
@@ -31,13 +40,13 @@ export default function FleetPage() {
       <div className="mb-4 flex flex-wrap gap-2">
         {FILTERS.map((f) => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
+            key={f.value}
+            onClick={() => setFilter(f.value)}
             className={`rounded-full px-3 py-1.5 text-sm font-medium ${
-              filter === f ? "bg-navy-800 text-white" : "bg-white text-navy-500 hover:bg-navy-50"
+              filter === f.value ? "bg-navy-800 text-white" : "bg-white text-navy-500 hover:bg-navy-50"
             }`}
           >
-            {f === "ALL" ? t("common.all") : t(`common.${f.toLowerCase().replace("_", "")}` as string) || f}
+            {t(f.key)}
           </button>
         ))}
       </div>

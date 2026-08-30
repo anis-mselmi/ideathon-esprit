@@ -2,10 +2,17 @@ import { prisma } from "@/lib/db";
 import { ok, fail, requireUser, isResponse } from "@/lib/api";
 import { ingestTelemetry, EspTelemetry } from "@/lib/telemetry";
 
+function authorizedDevice(req: Request) {
+  const expected = process.env.IOT_INGEST_API_KEY;
+  if (!expected) return false;
+  const supplied = req.headers.get("x-iot-api-key") ??
+    req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  return supplied === expected;
+}
+
 // POST /api/telemetry — ingestion endpoint. A real ESP32 posts the same shape.
-// (In dev this is open to authenticated owners / simulator; in production a
-// device token would authenticate hardware.)
 export async function POST(req: Request) {
+  if (!authorizedDevice(req)) return fail("Invalid or missing IoT API key", 401);
   const body = (await req.json().catch(() => null)) as EspTelemetry | null;
   if (!body || !body.vehicleCode) return fail("Invalid telemetry", 422);
   try {

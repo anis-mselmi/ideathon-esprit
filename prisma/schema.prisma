@@ -1,4 +1,4 @@
-// E-Move Guardian — data model
+// EVA — data model
 // SQLite for zero-config local dev. To scale: change provider to "postgresql"
 // and set DATABASE_URL to a Postgres connection string. Model is Postgres-ready
 // (enums represented as strings for SQLite portability).

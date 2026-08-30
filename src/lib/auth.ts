@@ -5,7 +5,7 @@ import { JWT_SECRET } from "./config";
 import { prisma } from "./db";
 
 const secret = new TextEncoder().encode(JWT_SECRET);
-const COOKIE = "emg_session";
+const COOKIE = "eva_session";
 
 export type SessionUser = {
   id: string;

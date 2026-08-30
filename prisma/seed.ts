@@ -59,7 +59,7 @@ async function main() {
 
   const owner = await prisma.user.create({
     data: {
-      email: "owner@emove.tn",
+      email: "owner@eva.tn",
       passwordHash: ownerPw,
       role: "OWNER",
       fullName: "Leila Ben Youssef",
@@ -74,7 +74,7 @@ async function main() {
     clients.push(
       await prisma.user.create({
         data: {
-          email: `client${i + 1}@emove.tn`,
+          email: `client${i + 1}@eva.tn`,
           passwordHash: clientPw,
           role: "CLIENT",
           fullName: CLIENT_NAMES[i],
@@ -90,7 +90,7 @@ async function main() {
   // A primary demo client for easy login.
   const demoClient = await prisma.user.create({
     data: {
-      email: "client@emove.tn",
+      email: "client@eva.tn",
       passwordHash: clientPw,
       role: "CLIENT",
       fullName: "Sami Haddad",
@@ -285,15 +285,15 @@ async function main() {
     data: {
       userId: owner.id,
       type: "WELCOME",
-      title: "Welcome to E-Move Guardian",
+      title: "Welcome to EVA",
       body: "Your fleet is live. Open the Demo Control panel to run the full scenario.",
       severity: "INFO",
     },
   });
 
   console.log("\n✅ Seed complete.");
-  console.log("   Owner:  owner@emove.tn / owner123");
-  console.log("   Client: client@emove.tn / client123");
+  console.log("   Owner:  owner@eva.tn / owner123");
+  console.log("   Client: client@eva.tn / client123");
 }
 
 main()

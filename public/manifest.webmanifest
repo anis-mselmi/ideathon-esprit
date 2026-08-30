@@ -1,6 +1,6 @@
 {
-  "name": "E-Move Guardian",
-  "short_name": "E-Move",
+  "name": "EVA",
+  "short_name": "EVA",
   "description": "Smart electric mobility management for safer micro-leasing.",
   "start_url": "/",
   "display": "standalone",

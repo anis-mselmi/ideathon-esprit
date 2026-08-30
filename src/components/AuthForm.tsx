@@ -114,11 +114,11 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         {mode === "login" && (
           <div className="mt-4 rounded-xl bg-white p-4 text-sm text-navy-500 shadow-card">
             <div className="font-semibold text-navy-700">{t("auth.demoAccounts")}</div>
-            <button type="button" className="mt-1 block font-mono text-xs hover:text-navy-800" onClick={() => { setEmail("owner@emove.tn"); setPassword("owner123"); }}>
-              owner@emove.tn / owner123
+            <button type="button" className="mt-1 block font-mono text-xs hover:text-navy-800" onClick={() => { setEmail("owner@eva.tn"); setPassword("owner123"); }}>
+              owner@eva.tn / owner123
             </button>
-            <button type="button" className="block font-mono text-xs hover:text-navy-800" onClick={() => { setEmail("client@emove.tn"); setPassword("client123"); }}>
-              client@emove.tn / client123
+            <button type="button" className="block font-mono text-xs hover:text-navy-800" onClick={() => { setEmail("client@eva.tn"); setPassword("client123"); }}>
+              client@eva.tn / client123
             </button>
           </div>
         )}

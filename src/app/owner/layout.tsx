@@ -12,7 +12,6 @@ const NAV: NavItem[] = [
   { href: "/owner/incidents", labelKey: "nav.incidents", icon: "🚨" },
   { href: "/owner/insights", labelKey: "nav.insights", icon: "📊" },
   { href: "/owner/notifications", labelKey: "nav.notifications", icon: "🔔" },
-  { href: "/owner/demo", labelKey: "nav.demo", icon: "🎛️" },
 ];
 
 export default async function OwnerLayout({ children }: { children: React.ReactNode }) {

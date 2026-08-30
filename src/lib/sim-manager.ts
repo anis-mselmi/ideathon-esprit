@@ -22,11 +22,11 @@ interface SimState {
   loaded: boolean;
 }
 
-const g = globalThis as unknown as { __emgSim?: SimState };
+const g = globalThis as unknown as { __evaSim?: SimState };
 const sim: SimState =
-  g.__emgSim ??
+  g.__evaSim ??
   { vehicles: new Map(), timer: null, running: false, intervalMs: 3000, loaded: false };
-g.__emgSim = sim;
+g.__evaSim = sim;
 
 /** Load vehicle seeds from the DB into the simulator (idempotent). */
 export async function loadFleet() {

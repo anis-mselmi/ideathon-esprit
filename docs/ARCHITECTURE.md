@@ -2,7 +2,7 @@
 
 ## Overview
 
-E-Move Guardian is a **modular monolith** (Next.js) with a clearly separated AI layer and
+EVA is a **modular monolith** (Next.js) with a clearly separated AI layer and
 IoT simulator, so it can later split into services without rewriting business logic.
 
 ```

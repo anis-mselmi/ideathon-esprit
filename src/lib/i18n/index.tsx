@@ -23,7 +23,7 @@ export function I18nProvider({
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
-    document.cookie = `emg_locale=${l}; path=/; max-age=${60 * 60 * 24 * 365}`;
+    document.cookie = `eva_locale=${l}; path=/; max-age=${60 * 60 * 24 * 365}`;
     document.documentElement.lang = l;
     document.documentElement.dir = RTL_LOCALES.includes(l) ? "rtl" : "ltr";
   }, []);
