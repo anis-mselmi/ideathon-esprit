@@ -1,15 +1,18 @@
 // EVA — data model
-// SQLite for zero-config local dev. To scale: change provider to "postgresql"
-// and set DATABASE_URL to a Postgres connection string. Model is Postgres-ready
-// (enums represented as strings for SQLite portability).
+// Postgres (Neon on Vercel). Enums are represented as strings for portability.
+// DATABASE_URL = pooled connection (used at runtime by the serverless functions).
+// DIRECT_URL   = direct connection (used by `prisma db push` / migrations).
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // "native" covers local dev; the rhel target is what Vercel's runtime uses.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ---------------------------------------------------------------------------

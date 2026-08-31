@@ -9,4 +9,7 @@ export const prisma =
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// Cache the client on globalThis in every environment. In dev this avoids
+// exhausting connections during HMR; on Vercel's Fluid Compute (which reuses
+// warm function instances) it prevents opening a new pool on each invocation.
+globalForPrisma.prisma = prisma;

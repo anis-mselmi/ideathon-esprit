@@ -36,11 +36,7 @@ export function Landing() {
                 {t("auth.signIn")}
               </Link>
             </div>
-            <div className="mt-6 rounded-xl bg-white/5 p-4 text-sm text-navy-100">
-              <div className="font-semibold text-white">{t("auth.demoAccounts")}</div>
-              <div className="mt-1 font-mono text-xs">owner@eva.tn / owner123</div>
-              <div className="font-mono text-xs">client@eva.tn / client123</div>
-            </div>
+            
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -57,10 +53,6 @@ export function Landing() {
               </div>
             ))}
           </div>
-        </section>
-
-        <section className="border-t border-white/10 py-10 text-center text-sm text-navy-200">
-          Sense → Understand → Act · {t("app.name")}
         </section>
       </main>
     </div>
